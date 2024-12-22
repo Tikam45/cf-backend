@@ -16,8 +16,10 @@ app.use(express.urlencoded({extended: false}));
 
 
 app.use(cors({
-    origin: 'http://localhost:5173'
+    origin: 'https://cf-frontend-sigma.vercel.app/'
 }));
+
+
 require("./config/database").connect();
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
