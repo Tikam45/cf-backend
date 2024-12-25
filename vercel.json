@@ -12,7 +12,7 @@
             "dest": "index.js",
             "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
             "headers": {
-                "Access-Control-Allow-Origin": "https://cf-frontend-sigma.vercel.app/",
+                "Access-Control-Allow-Origin": "https://cf-frontend-ob1opxp5d-tikam-s-projects.vercel.app",
                 "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
                 "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization"
             }
