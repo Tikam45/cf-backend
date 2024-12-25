@@ -16,7 +16,7 @@ app.use(express.urlencoded({extended: false}));
 
 
 app.use(cors({
-    origin: 'https://cf-frontend-sigma.vercel.app/'
+    origin: 'https://cf-frontend-sigma.vercel.app'
 }));
 
 
