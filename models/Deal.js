@@ -25,6 +25,18 @@ const dealSchema = new mongoose.Schema({
     description: {
         type: String,
         trim: true,
+    },
+    ongoing:{
+        type: Boolean,
+    },
+    isConfirmed:{
+        type: Boolean,
+    },
+    isCompleted:{
+        type: Boolean,
+    },
+    cancellationJobId:{
+        type: String,
     }
 });
 
