@@ -3,6 +3,7 @@ const User = require("../models/User");
 const OTP = require("../models/Otp");
 const otpGenerator = require("otp-generator");
 const bcrypt = require("bcryptjs");
+const PassOtp = require("../models/PassOtp")
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
@@ -184,4 +185,87 @@ exports.login = async (request, response) => {
       });
     }
 };
-  
+
+
+exports.resetPassword = async(req, res) => {
+  try{
+    const { otp, newPassword} = req.body;
+    const email = req.user.email;
+    console.log(otp)
+    if(!email || !otp || !newPassword){
+      return res.status(402).json({
+        success: false,
+        message: "All fields are mandatory",
+      })
+    }
+    const recentOtp = await PassOtp.find({email}).sort({createdAt: -1}).limit(1);
+    if(!recentOtp){
+      return res.status(401).json({
+        success: false,
+        message: "No request to change password exists",
+      })
+    }
+    console.log(recentOtp, otp);
+    if(recentOtp[0].otp !== otp){
+      return res.status(401).json({
+        success: false,
+        message: "OTP doesn't match",
+      })
+    }
+
+    const user = await User.findOneAndUpdate({email: email},
+      {
+        password: newPassword
+      }
+    )
+    console.log(user);
+
+    return res.status(200).json({
+      success: true,
+      message: "Password updated successfully",
+    })
+  }
+  catch(error){
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    })
+  }
+}
+
+exports.sendResetPasswordOtp = async(req, res) => {
+  try{
+    console.log(req.user);
+    const {email} = req.user;
+    let otp = otpGenerator.generate(6, {
+      upperCaseAlphabets: false,
+      lowerCaseAlphabets: false,
+      specialChars: false,
+    });
+
+    const otpPayload = {email, otp};
+
+      // create the otp entry in db
+      const otpBody = await PassOtp.create(otpPayload);
+      console.log(otpBody);
+      if(!otpBody){
+        return res.status(403).json({
+          success: false,
+          message: "Couldn't send OTP now"
+        })
+      }
+
+      res.status(200).json({
+          success: true,
+          message: "OTP sent successfully",
+      });
+  }
+  catch(error){
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    })
+  }
+}

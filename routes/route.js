@@ -1,7 +1,7 @@
 
 const express = require("express");
 const router = express.Router();
-const {login, signUp, sendOTP} = require("../controllers/Auth");
+const {login, signUp, sendOTP, sendResetPasswordOtp, resetPassword} = require("../controllers/Auth");
 const {createOrder, getOrders, removeOrder, getUserOrdersBidsAndDeals, getOrderDetails} = require("../controllers/Order");
 const {createBid, removeBid, getUserBids} = require("../controllers/Bid");
 const {sendOtpMessage,updateImage, updateMobile, getUserProfile} = require("../controllers/Profile")
@@ -13,6 +13,8 @@ const {createDeal} = require("../controllers/Deal")
 router.post("/auth/login", login);
 router.post("/auth/signup", signUp);
 router.post("/auth/sendotp", sendOTP);
+router.post("/auth/sendResetPasswordOtp", auth, sendResetPasswordOtp);
+router.put("/auth/resetPassword", auth, resetPassword)
 
 router.post("/orders/createOrder",auth, upload.fields([
     { name: "coverPhoto", maxCount: 1 }, // 1 file for coverPhoto
