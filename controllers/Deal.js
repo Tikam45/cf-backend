@@ -3,13 +3,13 @@ const User = require("../models/User");
 const Bid = require("../models/Bids");
 const Order = require("../models/Order");
 const Deal = require("../models/Deal");
-const Queue = require("bull");
-const cancelDealQueue = new Queue("cancelDealQueue");
+// const Queue = require("bull");
+// const cancelDealQueue = new Queue("cancelDealQueue");
 
-cancelDealQueue.process(async (job) => {
-    const { dealId } = job.data;
-    await cancelDeal({dealId});
-});
+// cancelDealQueue.process(async (job) => {
+//     const { dealId } = job.data;
+//     await cancelDeal({dealId});
+// });
 
 exports.createDeal = async(req, res) => {
     try {
@@ -55,8 +55,8 @@ exports.createDeal = async(req, res) => {
         );
         console.log("hello");
 
-        const job = await cancelDealQueue.add({ dealId: deal._id }, { delay:  60 * 1000 });
-        deal.cancellationJobId = job.id;
+        // const job = await cancelDealQueue.add({ dealId: deal._id }, { delay:  60 * 1000 });
+        // deal.cancellationJobId = job.id;
         await deal.save();
 
         const bidder = await User.findByIdAndUpdate(bid.bidder, 
@@ -94,60 +94,60 @@ exports.createDeal = async(req, res) => {
     }
 }
 
-const cancelDeal = async({dealId}) => {
-    try {
-        const deal = await Deal.findById(dealId);
-        const order = await Order.findByIdAndUpdate(deal.order, 
-            {
-                isActive :true,
-            }
-        );
-        const bidsIdArray = order.bids;
-        await Bid.updateMany(
-            { _id: { $in: bidsIdArray } },
-            { $set: { isActive: true } }  
-        );
-        const deletedDeal = await Deal.findByIdAndDelete(dealId);
-        const buyer = await User.findByIdAndUpdate(deletedDeal.buyer,{
-            $pull: {deals: dealId}
-        })
-        const seller = await User.findByIdAndUpdate(deletedDeal.seller,{
-            $pull: {deals: dealId}
-        });
-        console.log("Deal Cancelled Successfully");
-    } 
-    catch (error) {
-        console.log("Error in cancelling the deal" , error);
-    }
-}
+// const cancelDeal = async({dealId}) => {
+//     try {
+//         const deal = await Deal.findById(dealId);
+//         const order = await Order.findByIdAndUpdate(deal.order, 
+//             {
+//                 isActive :true,
+//             }
+//         );
+//         const bidsIdArray = order.bids;
+//         await Bid.updateMany(
+//             { _id: { $in: bidsIdArray } },
+//             { $set: { isActive: true } }  
+//         );
+//         const deletedDeal = await Deal.findByIdAndDelete(dealId);
+//         const buyer = await User.findByIdAndUpdate(deletedDeal.buyer,{
+//             $pull: {deals: dealId}
+//         })
+//         const seller = await User.findByIdAndUpdate(deletedDeal.seller,{
+//             $pull: {deals: dealId}
+//         });
+//         console.log("Deal Cancelled Successfully");
+//     } 
+//     catch (error) {
+//         console.log("Error in cancelling the deal" , error);
+//     }
+// }
 
-exports.cancelCancelDeal = async (req, res) => {
-    try {
-        const { dealId } = req.body;
+// exports.cancelCancelDeal = async (req, res) => {
+//     try {
+//         const { dealId } = req.body;
 
-        const deal = await Deal.findById(dealId);
-        if (!deal) {
-            return res.status(404).json({ success: false, message: "Deal not found" });
-        }
+//         const deal = await Deal.findById(dealId);
+//         if (!deal) {
+//             return res.status(404).json({ success: false, message: "Deal not found" });
+//         }
 
-        if (!deal.cancellationJobId) {
-            return res.status(400).json({ success: false, message: "No cancellation job scheduled for this deal" });
-        }
+//         if (!deal.cancellationJobId) {
+//             return res.status(400).json({ success: false, message: "No cancellation job scheduled for this deal" });
+//         }
 
-        const job = await cancelDealQueue.getJob(deal.cancellationJobId);
-        if (job) {
-            await job.remove(); 
-            deal.cancellationJobId = null; 
-            deal.isConfirmed = true,
-            deal.ongoing = false,
-            await deal.save();
+//         const job = await cancelDealQueue.getJob(deal.cancellationJobId);
+//         if (job) {
+//             await job.remove(); 
+//             deal.cancellationJobId = null; 
+//             deal.isConfirmed = true,
+//             deal.ongoing = false,
+//             await deal.save();
 
-            return res.status(200).json({ success: true, message: "Deal cancellation operation successfully canceled" });
-        } else {
-            return res.status(404).json({ success: false, message: "Cancellation job not found" });
-        }
-    } catch (error) {
-        console.error("Error canceling cancellation operation:", error);
-        return res.status(500).json({ success: false, message: "Internal Server Error" });
-    }
-};
+//             return res.status(200).json({ success: true, message: "Deal cancellation operation successfully canceled" });
+//         } else {
+//             return res.status(404).json({ success: false, message: "Cancellation job not found" });
+//         }
+//     } catch (error) {
+//         console.error("Error canceling cancellation operation:", error);
+//         return res.status(500).json({ success: false, message: "Internal Server Error" });
+//     }
+// };
