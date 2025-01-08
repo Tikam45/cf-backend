@@ -8,6 +8,7 @@ const {sendOtpMessage,updateImage, updateMobile, getUserProfile} = require("../c
 const {auth} = require("../middlewares/Auth")
 const upload = require("../middlewares/Multer");
 const {createDeal} = require("../controllers/Deal")
+const {getCropTypes, addCropTypes} = require("../controllers/CropType")
 
 
 router.post("/auth/login", login);
@@ -45,5 +46,8 @@ router.delete("/bids/deleteBid",auth, removeBid);
 // router.get("/bids/getUserBids", auth, getUserBids);
 
 router.post("/deals/createDeal", auth, createDeal);
+
+router.get("/getCropTypes", getCropTypes);
+router.post("/addCropType", addCropTypes)
 
 module.exports = router;
