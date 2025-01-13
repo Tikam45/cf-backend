@@ -215,7 +215,7 @@ exports.resetPassword = async(req, res) => {
       })
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     const user = await User.findOneAndUpdate({email: email},
       {
