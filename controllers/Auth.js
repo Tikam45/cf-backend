@@ -190,7 +190,7 @@ exports.login = async (request, response) => {
 exports.resetPassword = async(req, res) => {
   try{
     const { otp, newPassword} = req.body;
-    const email = req.user.email;
+    const email = req.user.email || req.body.email;
     console.log(otp)
     if(!email || !otp || !newPassword){
       return res.status(402).json({
@@ -199,14 +199,14 @@ exports.resetPassword = async(req, res) => {
       })
     }
     const recentOtp = await PassOtp.find({email}).sort({createdAt: -1}).limit(1);
-    if(!recentOtp){
+    if(!recentOtp || recentOtp.length === 0){
       return res.status(401).json({
         success: false,
         message: "No request to change password exists",
       })
     }
     console.log(recentOtp, otp);
-    if(recentOtp[0].otp !== otp){
+    if(recentOtp[0]?.otp !== otp){
       return res.status(401).json({
         success: false,
         message: "OTP doesn't match",
@@ -237,7 +237,7 @@ exports.resetPassword = async(req, res) => {
 exports.sendResetPasswordOtp = async(req, res) => {
   try{
     console.log(req.user);
-    const {email} = req.user;
+    const {email} = req?.user || req?.body;
     let otp = otpGenerator.generate(6, {
       upperCaseAlphabets: false,
       lowerCaseAlphabets: false,

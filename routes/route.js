@@ -16,6 +16,8 @@ router.post("/auth/signup", signUp);
 router.post("/auth/sendotp", sendOTP);
 router.post("/auth/sendResetPasswordOtp", auth, sendResetPasswordOtp);
 router.put("/auth/resetPassword", auth, resetPassword)
+router.post("/sendForgotPasswordOtp", sendResetPasswordOtp);
+router.put("/resetForgotPassword", resetPassword);
 
 router.post("/orders/createOrder",auth, upload.fields([
     { name: "coverPhoto", maxCount: 1 }, // 1 file for coverPhoto

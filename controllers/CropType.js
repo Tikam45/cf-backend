@@ -4,6 +4,7 @@ const CropType = require("../models/CropTypes");
 exports.getCropTypes = async(req, res) => {
     try{
         const cropTypes = await CropType.find({});
+        console.log(cropTypes);
         return res.status(200).json({
             success: true,
             message: "Crop Types Found",

@@ -37,12 +37,12 @@ exports.createOrder = async(request, response) => {
         //     })
         // }
 
-        if(!user.mobileNo){
-            return response.status(401).json({
-                success: false,
-                message: "Verify your mobile no. first",
-            })
-        }
+        // if(!user.mobileNo){
+        //     return response.status(401).json({
+        //         success: false,
+        //         message: "Verify your mobile no. first",
+        //     })
+        // }
 
         let landDocumentUrl = "";
         const picsArray = [];

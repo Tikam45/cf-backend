@@ -52,7 +52,7 @@ exports.updateMobile = async(req, res) => {
         .sort({createdAt: -1})
         .limit(1);
 
-        if(recentOtp.length == 0){
+        if(recentOtp.length === 0){
             return res.status(400).json({
                 success: "false",
                 message: "Error while matching OTP",
