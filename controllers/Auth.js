@@ -215,9 +215,11 @@ exports.resetPassword = async(req, res) => {
       })
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = await User.findOneAndUpdate({email: email},
       {
-        password: newPassword
+        password: hashedPassword
       }
     )
     console.log(user);
