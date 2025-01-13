@@ -190,7 +190,9 @@ exports.login = async (request, response) => {
 exports.resetPassword = async(req, res) => {
   try{
     const { otp, newPassword} = req.body;
-    const email = req.user.email || req.body.email;
+    console.log(req.body);
+    console.log(req.user);
+    const email = req?.user?.email || req?.body?.email;
     console.log(otp)
     if(!email || !otp || !newPassword){
       return res.status(402).json({
