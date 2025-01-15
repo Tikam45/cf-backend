@@ -7,6 +7,7 @@ const Queue = require("bull");
 const cancelDealQueue = new Queue("cancelDealQueue");
  
 cancelDealQueue.process(async (job) => {
+    console.log("in queue", job);
     const { dealId } = job.data;
     await cancelDeal({dealId});
 });
@@ -55,7 +56,8 @@ exports.createDeal = async(req, res) => {
         );
         console.log("hello");
 
-        const job = await cancelDealQueue.add({ dealId: deal._id }, { delay:  60 * 1000 });
+        const job = await cancelDealQueue.add({ dealId: deal._id }, { delay:  5*60 * 1000 });
+        console.log("job", job);
         deal.cancellationJobId = job.id;
         await deal.save();
 
@@ -67,7 +69,7 @@ exports.createDeal = async(req, res) => {
             },
             {new: true, runValidators: true}
         )
-        console.log("hello");
+        console.log("hello bidder", bidder);
         const seller = await User.findByIdAndUpdate(order.user, 
             {
                 $push: {deals: deal._id},
@@ -75,7 +77,7 @@ exports.createDeal = async(req, res) => {
             },
             {new: true, runValidators: true},
         )
-        console.log("hello");
+        console.log("hello seller", seller);
 
         // console.log("buyer", buyer, seller);
 
@@ -96,6 +98,7 @@ exports.createDeal = async(req, res) => {
 
 const cancelDeal = async({dealId}) => {
     try {
+        console.log("in cancel deal", dealId);
         const deal = await Deal.findById(dealId);
         const order = await Order.findByIdAndUpdate(deal.order, 
             {

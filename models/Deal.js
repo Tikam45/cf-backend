@@ -37,6 +37,10 @@ const dealSchema = new mongoose.Schema({
     },
     cancellationJobId:{
         type: String,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now(),
     }
 });
 
