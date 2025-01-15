@@ -86,7 +86,7 @@ exports.createDeal = async(req, res) => {
         );
         console.log("hello");
 
-        const job = await cancelDealQueue.add({ dealId: deal._id }, { delay:  5*60 * 1000 });
+        const job = await cancelDealQueue.add('cancel-deal', { dealId: deal._id }, { delay: 5 * 60 * 1000 });
         console.log("job", job);
         deal.cancellationJobId = job.id;
         await deal.save();
