@@ -3,16 +3,46 @@ const User = require("../models/User");
 const Bid = require("../models/Bids");
 const Order = require("../models/Order");
 const Deal = require("../models/Deal");
-const Queue = require("bull");
-const cancelDealQueue = new Queue("cancelDealQueue");
- 
-cancelDealQueue.process(async (job) => {
-    console.log("in queue", job);
+const { Queue, Worker } = require('@bullmq');
+const mongoose = require('mongoose')
+
+const cancelDealQueue = new Queue('cancelDealQueue', {
+  connection: {
+    host: process.env.REDIS_HOST,
+    port: 6379,
+    password: process.env.REDIS_PASSWORD,
+    tls: { rejectUnauthorized: false },
+  },
+});
+
+const cancelDealWorker = new Worker(
+  'cancelDealQueue',
+  async (job) => {
     const { dealId } = job.data;
-    await cancelDeal({dealId});
+    console.log("Processing cancellation job for deal:", dealId);
+    await cancelDeal({ dealId });
+  },
+  {
+    connection: {
+      host: process.env.REDIS_HOST,
+      port: 6379,
+      password: process.env.REDIS_PASSWORD,
+      tls: { rejectUnauthorized: false },
+    },
+  }
+);
+
+cancelDealWorker.on('completed', (job) => {
+  console.log(`Job ${job.id} completed.`);
+});
+
+cancelDealWorker.on('failed', (job, err) => {
+  console.error(`Job ${job.id} failed:`, err);
 });
 
 exports.createDeal = async(req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
         const {bidId} = req.body;
         const email = req.user.email;
@@ -80,6 +110,8 @@ exports.createDeal = async(req, res) => {
         console.log("hello seller", seller);
 
         // console.log("buyer", buyer, seller);
+        await session.commitTransaction();
+        session.endSession();
 
         return res.status(200).json({
             success: true,
@@ -88,6 +120,8 @@ exports.createDeal = async(req, res) => {
         })
     }
     catch (error) {
+        await session.abortTransaction();
+        session.endSession();
         console.log(error);
         return res.status(500).json({
             success: false,
