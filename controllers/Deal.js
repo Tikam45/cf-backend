@@ -3,7 +3,7 @@ const User = require("../models/User");
 const Bid = require("../models/Bids");
 const Order = require("../models/Order");
 const Deal = require("../models/Deal");
-const { Queue, Worker } = require('@bullmq');
+const { Queue, Worker } = require('bullmq');
 const mongoose = require('mongoose')
 
 const cancelDealQueue = new Queue('cancelDealQueue', {
