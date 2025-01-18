@@ -25,10 +25,11 @@ require("./config/database").connect();
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-export const instance = new Razorpay({
+const instance = new Razorpay({
     key_id: process.env.RAZORPAY_API_KEY,
     key_secret: process.env.RAZORPAY_APT_SECRET,
 });
+module.exports.instance = instance;
 
 const routes = require("./routes/route");
 app.use("", routes);
