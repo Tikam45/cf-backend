@@ -1,12 +1,15 @@
 
-const {instance} = require("../index")
 const crypto = require("crypto");
 const { cancelCancelDeal } = require("./Deal");
 const {Payment} = require("../models/Payments")
-
+const Razorpay = require("razorpay")
 
 exports.creatPaymenteOrder = async(req, res) => {
     try{
+        const instance = new Razorpay({
+            key_id: process.env.RAZORPAY_API_KEY,
+            key_secret: process.env.RAZORPAY_APT_SECRET,
+        });
         const {amount} = req.body;
         const options = {
             amount : amount*100,

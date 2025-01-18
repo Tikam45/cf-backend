@@ -3,7 +3,6 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const path = require("path");
-const Razorpay = require("razorpay")
 
 require("dotenv").config();
 const PORT = process.env.PORT || 4000;
@@ -25,11 +24,6 @@ require("./config/database").connect();
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const instance = new Razorpay({
-    key_id: process.env.RAZORPAY_API_KEY,
-    key_secret: process.env.RAZORPAY_APT_SECRET,
-});
-module.exports.instance = instance;
 
 const routes = require("./routes/route");
 app.use("", routes);
@@ -37,5 +31,3 @@ app.use("", routes);
 app.listen(PORT, () =>{
     console.log(`App is listening at ${PORT}`)
 });
-
-export default app;

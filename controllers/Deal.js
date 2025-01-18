@@ -158,7 +158,7 @@ const cancelDeal = async({dealId}) => {
     }
 }
 
-exports.cancelCancelDeal = async ({delaId, PaymentId}) => {
+exports.cancelCancelDeal = async ({dealId, PaymentId}) => {
     const session = await mongoose.startSession();
     session.startTransaction();
 
