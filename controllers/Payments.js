@@ -2,7 +2,7 @@
 const {instance} = require("../index")
 const crypto = require("crypto");
 const { cancelCancelDeal } = require("./Deal");
-const Payment = require("../models/Payments")
+const {Payment} = require("../models/Payments")
 
 exports.creatPaymenteOrder = async(req, res) => {
     try{

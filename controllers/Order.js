@@ -3,7 +3,7 @@ const Order = require("../models/Order");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken")
 const uploadPhoto = require("../utils/Cloudinary");
-const Bids = require("../models/Bids");
+const Bid = require("../models/Bids");
 // const multer = require("multer");
 // const upload = multer({ dest: "uploads/" });
 
@@ -173,7 +173,7 @@ exports.removeOrder = async(request, response) => {
         // Save the updated document back to the database
         await user.save();
 
-        await Bids.deleteMany({order: orderId});
+        await Bid.deleteMany({order: orderId});
 
         const deletedOrder = await Order.findByIdAndDelete(orderId);
 
