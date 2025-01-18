@@ -1,7 +1,7 @@
 
 const crypto = require("crypto");
 const { cancelCancelDeal } = require("./Deal");
-const {Payment} = require("../models/Payments")
+const Payment = require("../models/Payments")
 const Razorpay = require("razorpay")
 
 exports.creatPaymenteOrder = async(req, res) => {
