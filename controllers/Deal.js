@@ -184,25 +184,16 @@ exports.cancelCancelDeal = async ({delaId, PaymentId}) => {
 
             await session.commitTransaction();
             session.endSession();
-
-            return res.status(200).json({ 
-                success: true, 
-                message: "Deal cancellation operation successfully canceled" 
-            });
         } else {
             
             await session.abortTransaction();
             session.endSession();
 
-            return res.status(404).json({ 
-                success: false, 
-                message: "Cancellation job not found" 
-            });
         }
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
         console.error("Error canceling cancellation operation:", error);
-        return res.status(500).json({ success: false, message: "Internal Server Error" });
+        throw new Error("Cancelling cancel deal failed");
     }
 };
