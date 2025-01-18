@@ -94,7 +94,6 @@ exports.createDeal = async(req, res) => {
         const bidder = await User.findByIdAndUpdate(bid.bidder, 
             {
                 $push: {deals: deal._id},
-                $pull: {bids: bid._id}
 
             },
             {new: true, runValidators: true}
@@ -103,7 +102,6 @@ exports.createDeal = async(req, res) => {
         const seller = await User.findByIdAndUpdate(order.user, 
             {
                 $push: {deals: deal._id},
-                $pull: {orders: order._id},
             },
             {new: true, runValidators: true},
         )
@@ -163,7 +161,7 @@ exports.cancelCancelDeal = async ({dealId, PaymentId}) => {
     session.startTransaction();
 
     try {
-        const deal = await Deal.findByIdAndUpdate(dealId);
+        const deal = await Deal.findById(dealId);
         if (!deal) {
             return new Error("Deal not Found")
         }
@@ -172,24 +170,17 @@ exports.cancelCancelDeal = async ({dealId, PaymentId}) => {
             return new Error("No cancellation job scheduled for this deal");
         }
 
-        const job = await cancelDealQueue.getJob(deal.cancellationJobId);
-        if (job) {
+        // const job = await cancelDealQueue.getJob(deal.cancellationJobId);
 
-            await job.remove(); 
-            deal.cancellationJobId = null; 
-            deal.isConfirmed = true,
-            deal.ongoing = false,
-            deal.paymentId = PaymentId,
-            await deal.save();
+        deal.cancellationJobId = null; 
+        deal.isConfirmed = true,
+        deal.ongoing = false,
+        deal.paymentId = PaymentId,
+        await deal.save();
 
-            await session.commitTransaction();
-            session.endSession();
-        } else {
-            
-            await session.abortTransaction();
-            session.endSession();
+        await session.commitTransaction();
+        session.endSession();
 
-        }
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
