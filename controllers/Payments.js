@@ -61,6 +61,10 @@ exports.PaymentVerification = async(req, res) => {
                 message: "UnSuccessful Payment"
             })
         }
+        res.status(200).json({
+            success: true,
+            message: "Payment Recieved and Deal Completed",
+        })
     }
     catch(error){
         console.log(error);
