@@ -165,11 +165,11 @@ exports.cancelCancelDeal = async ({dealId, PaymentId}) => {
     try {
         const deal = await Deal.findByIdAndUpdate(dealId);
         if (!deal) {
-            return res.status(404).json({ success: false, message: "Deal not found" });
+            return new Error("Deal not Found")
         }
 
         if (!deal.cancellationJobId) {
-            return res.status(400).json({ success: false, message: "No cancellation job scheduled for this deal" });
+            return new Error("No cancellation job scheduled for this deal");
         }
 
         const job = await cancelDealQueue.getJob(deal.cancellationJobId);
