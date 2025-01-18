@@ -159,12 +159,11 @@ const cancelDeal = async({dealId}) => {
 }
 
 exports.cancelCancelDeal = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     try {
         const { dealId , PaymentId} = req.body;
-
-        const session = await mongoose.startSession();
-        session.startTransaction();
-
         const deal = await Deal.findByIdAndUpdate(dealId);
         if (!deal) {
             return res.status(404).json({ success: false, message: "Deal not found" });
