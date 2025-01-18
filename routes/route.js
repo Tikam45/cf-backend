@@ -9,6 +9,7 @@ const {auth} = require("../middlewares/Auth")
 const upload = require("../middlewares/Multer");
 const {createDeal} = require("../controllers/Deal")
 const {getCropTypes, addCropTypes} = require("../controllers/CropType")
+const {creatPaymenteOrder, PaymentVerification} = require("../controllers/Payments")
 
 
 router.post("/auth/login", login);
@@ -50,6 +51,9 @@ router.delete("/bids/deleteBid",auth, removeBid);
 router.post("/deals/createDeal", auth, createDeal);
 
 router.get("/getCropTypes", getCropTypes);
-router.post("/addCropType", addCropTypes)
+router.post("/addCropType", addCropTypes);
+
+router.post("/checkout", creatPaymenteOrder);
+router.post("/paymentVerification/:dealId", PaymentVerification);
 
 module.exports = router;

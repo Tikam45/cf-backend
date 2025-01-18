@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("./User");
+const Payment = require("./Payments");
 
 const dealSchema = new mongoose.Schema({
     order: {
@@ -41,6 +42,10 @@ const dealSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now(),
+    },
+    paymentId:{
+        type: mongoose.Schema.ObjectId,
+        ref: "Payment"
     }
 });
 

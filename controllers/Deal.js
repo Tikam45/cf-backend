@@ -160,9 +160,12 @@ const cancelDeal = async({dealId}) => {
 
 exports.cancelCancelDeal = async (req, res) => {
     try {
-        const { dealId } = req.body;
+        const { dealId , PaymentId} = req.body;
 
-        const deal = await Deal.findById(dealId);
+        const session = await mongoose.startSession();
+        session.startTransaction();
+
+        const deal = await Deal.findByIdAndUpdate(dealId);
         if (!deal) {
             return res.status(404).json({ success: false, message: "Deal not found" });
         }
@@ -173,17 +176,34 @@ exports.cancelCancelDeal = async (req, res) => {
 
         const job = await cancelDealQueue.getJob(deal.cancellationJobId);
         if (job) {
+
             await job.remove(); 
             deal.cancellationJobId = null; 
             deal.isConfirmed = true,
             deal.ongoing = false,
+            deal.paymentId = PaymentId,
             await deal.save();
 
-            return res.status(200).json({ success: true, message: "Deal cancellation operation successfully canceled" });
+            await session.commitTransaction();
+            session.endSession();
+
+            return res.status(200).json({ 
+                success: true, 
+                message: "Deal cancellation operation successfully canceled" 
+            });
         } else {
-            return res.status(404).json({ success: false, message: "Cancellation job not found" });
+            
+            await session.abortTransaction();
+            session.endSession();
+
+            return res.status(404).json({ 
+                success: false, 
+                message: "Cancellation job not found" 
+            });
         }
     } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
         console.error("Error canceling cancellation operation:", error);
         return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
