@@ -132,6 +132,12 @@ const cancelDeal = async({dealId}) => {
     try {
         console.log("in cancel deal", dealId);
         const deal = await Deal.findById(dealId);
+        if(deal.cancellationJobId === null){
+            return res.status(404).json({
+                success: false,
+                message: "The deal has been confirmed",
+            })
+        }
         const order = await Order.findByIdAndUpdate(deal.order, 
             {
                 isActive :true,
@@ -142,12 +148,6 @@ const cancelDeal = async({dealId}) => {
             { _id: { $in: bidsIdArray } },
             { $set: { isActive: true } }  
         );
-        const buyer = await User.findByIdAndUpdate(deal.buyer,{
-            $pull: {deals: dealId}
-        })
-        const seller = await User.findByIdAndUpdate(deal.seller,{
-            $pull: {deals: dealId}
-        });
         const deletedDeal = await Deal.findByIdAndDelete(dealId);
         console.log("Deal Cancelled Successfully");
     } 
