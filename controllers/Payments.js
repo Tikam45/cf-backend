@@ -36,7 +36,7 @@ exports.creatPaymenteOrder = async(req, res) => {
 exports.PaymentVerification = async(req, res) => {
     try{
         const {razorpay_order_id, razorpay_payment_id, razorpay_signature} = req.body;
-        const {dealId} = req.query;
+        const {dealId} = req.params;
 
         const body = razorpay_order_id + "|" + razorpay_payment_id;
 
@@ -53,6 +53,7 @@ exports.PaymentVerification = async(req, res) => {
                 razorpay_payment_id,
                 razorpay_signature,
             })
+            console.log("dealId" , dealId);
             await cancelCancelDeal({dealId, PaymentId: payment});
         }
         else{

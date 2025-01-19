@@ -157,6 +157,7 @@ const cancelDeal = async({dealId}) => {
 }
 
 exports.cancelCancelDeal = async ({dealId, PaymentId}) => {
+    console.log("haji", dealId, PaymentId);
     const session = await mongoose.startSession();
     session.startTransaction();
 
@@ -171,7 +172,7 @@ exports.cancelCancelDeal = async ({dealId, PaymentId}) => {
         }
 
         // const job = await cancelDealQueue.getJob(deal.cancellationJobId);
-
+        console.log("deal", deal);
         deal.cancellationJobId = null; 
         deal.isConfirmed = true,
         deal.ongoing = false,
